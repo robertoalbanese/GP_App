@@ -283,6 +283,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
 
         savePath = (TextView) findViewById(R.id.activity_main_save_path);
         screenShot = (ToggleButton) findViewById(R.id.activity_main_screen_shot);
+        savePath.setVisibility(View.INVISIBLE);
 
         titleTv = (TextView) findViewById(R.id.title_tv);
 
@@ -330,7 +331,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
 
         videostreamPreviewTtView = (TextureView) findViewById(R.id.livestream_preview_ttv);
         videostreamPreviewSf = (SurfaceView) findViewById(R.id.livestream_preview_sf);
-        videostreamPreviewSf.setClickable(true);
+        videostreamPreviewSf.setClickable(false);
         videostreamPreviewSf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -397,8 +398,12 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 handleYUVClick();
                 if (isChecked) {
+                    videostreamPreviewTtView.setVisibility(View.INVISIBLE);
+                    videostreamPreviewSf.setVisibility(View.INVISIBLE);
                     showToast("Start Streaming Success");
                 } else {
+                    videostreamPreviewTtView.setVisibility(View.VISIBLE);
+                    videostreamPreviewSf.setVisibility(View.VISIBLE);
                     showToast("Stop Streaming Success");
                 }
             }
@@ -818,8 +823,8 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
                     DJIVideoStreamDecoder.getInstance().setYuvDataListener(null);
                     break;
             }
-            savePath.setText("");
-            savePath.setVisibility(View.INVISIBLE);
+            //savePath.setText("");
+            //savePath.setVisibility(View.INVISIBLE);
             stringBuilder = null;
         } else {
             screenShot.setText("Live Stream");
@@ -837,7 +842,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
                     break;
             }
             savePath.setText("");
-            savePath.setVisibility(View.VISIBLE);
+            //savePath.setVisibility(View.VISIBLE);
         }
     }
 

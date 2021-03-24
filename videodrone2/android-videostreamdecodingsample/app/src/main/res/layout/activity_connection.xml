@@ -98,5 +98,42 @@
         android:layout_marginTop="30dp"
         android:text="" />
 
+    <ToggleButton
+        android:id="@+id/enable_android_bridge"
+        android:layout_width="84dp"
+        android:layout_height="36dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="80dp"
+        android:layout_marginBottom="100dp"
+        android:background="@drawable/round_btn"
+        android:textColor="@color/colorWhite"
+        android:textOff="Android    Bridge"
+        android:textOn="Android    Bridge" />
+
+    <EditText
+        android:id="@+id/edittext_bridge_ip_addr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="23dp"
+        android:layout_marginLeft="65dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="100dp"
+        android:layout_toEndOf="@+id/enable_android_bridge"
+        android:hint="Android Bridge IP"
+        android:textColor="@color/colorBlack"
+        android:textSize="14dp" />
+
+    <Button
+        android:id="@+id/btn_set_andr_bridge"
+        android:layout_width="50dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="-15dp"
+        android:layout_marginBottom="100dp"
+        android:layout_toEndOf="@+id/edittext_bridge_ip_addr"
+        android:text="Set" />
+
 
 </RelativeLayout>

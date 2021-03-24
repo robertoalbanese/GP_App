@@ -15,9 +15,11 @@ import android.text.format.Formatter;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -70,6 +72,9 @@ public class ConnectionActivity extends Activity implements View.OnClickListener
     private TextView mTextConnectionStatus;
     private TextView mTextProduct;
     private TextView mTextModelAvailable;
+    private ToggleButton mAndroidBridge;
+    private EditText mBridgeIp;
+    private Button mSetBridge;
     private Button mBtnOpen;
     private EditText mEditIP;
     private TextView mTextViewIP;
@@ -140,6 +145,7 @@ public class ConnectionActivity extends Activity implements View.OnClickListener
                             showToast("Product Disconnected");
                             notifyStatusChange();
                         }
+
                         @Override
                         public void onProductConnect(BaseProduct baseProduct) {
                             notifyStatusChange();
@@ -162,13 +168,13 @@ public class ConnectionActivity extends Activity implements View.OnClickListener
                                                       BaseComponent oldComponent,
                                                       BaseComponent newComponent) {
                             if (newComponent != null && oldComponent == null) {
-                                Log.v(TAG,componentKey.name() + " Component Found index:" + newComponent.getIndex());
+                                Log.v(TAG, componentKey.name() + " Component Found index:" + newComponent.getIndex());
                             }
                             if (newComponent != null) {
                                 newComponent.setComponentListener(new BaseComponent.ComponentListener() {
                                     @Override
                                     public void onConnectivityChange(boolean b) {
-                                        Log.v(TAG," Component " + (b?"connected":"disconnected"));
+                                        Log.v(TAG, " Component " + (b ? "connected" : "disconnected"));
                                         notifyStatusChange();
                                     }
                                 });
@@ -197,7 +203,7 @@ public class ConnectionActivity extends Activity implements View.OnClickListener
                 new CommonCallbacks.CompletionCallbackWith<UserAccountState>() {
                     @Override
                     public void onSuccess(final UserAccountState userAccountState) {
-                        showToast("login success! Account state is:" +userAccountState.name());
+                        showToast("login success! Account state is:" + userAccountState.name());
                     }
 
                     @Override
@@ -281,14 +287,44 @@ public class ConnectionActivity extends Activity implements View.OnClickListener
         mTextViewIP = (TextView) findViewById(R.id.textview_ip_addr); //ip address of the server android
         mEditIP = (EditText) findViewById(R.id.editTextIP);
         mBtnOpen = (Button) findViewById(R.id.btn_open);
+        mAndroidBridge = (ToggleButton) findViewById(R.id.enable_android_bridge); //Enable Android bridge
+        mBridgeIp = (EditText) findViewById(R.id.edittext_bridge_ip_addr);
+        mSetBridge = (Button) findViewById(R.id.btn_set_andr_bridge);
         mBtnOpen.setOnClickListener(this);
+
+        mBridgeIp.setVisibility(View.INVISIBLE);
+        mSetBridge.setVisibility(View.INVISIBLE);
+
         mBtnOpen.setEnabled(false);
-        ((TextView)findViewById(R.id.textView2)).setText(getResources().getString(R.string.sdk_version, DJISDKManager.getInstance().getSDKVersion()));
+        ((TextView) findViewById(R.id.textView2)).setText(getResources().getString(R.string.sdk_version, DJISDKManager.getInstance().getSDKVersion()));
 
         //Show on screen in a TextView widget the ip address of the Android device
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         String ipAddress = Formatter.formatIpAddress(wifiManager.getConnectionInfo().getIpAddress());
         mTextViewIP.setText("Your Device IP Address: " + ipAddress);
+
+        mAndroidBridge.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    mBridgeIp.setVisibility(View.VISIBLE);
+                    mSetBridge.setVisibility(View.VISIBLE);
+                } else {
+                    mBridgeIp.setVisibility(View.INVISIBLE);
+                    mSetBridge.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+        mSetBridge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String str = mBridgeIp.getText().toString();
+                DJISDKManager.getInstance().enableBridgeModeWithBridgeAppIP(str);
+                mBridgeIp.setEnabled(false);
+                mSetBridge.setEnabled(false);
+            }
+        });
 
     }
 
@@ -389,6 +425,7 @@ public class ConnectionActivity extends Activity implements View.OnClickListener
             mTextConnectionStatus.setText(R.string.connection_loose);
         }
     }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);

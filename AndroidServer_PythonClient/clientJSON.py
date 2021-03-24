@@ -33,7 +33,7 @@ def main():
     #    y = wordset[i][2]
     while True:
         data['target_x'] = 1
-        data['target_y'] = 0
+        data['target_y'] = 1
         
         msg = json.dumps(data)
 
