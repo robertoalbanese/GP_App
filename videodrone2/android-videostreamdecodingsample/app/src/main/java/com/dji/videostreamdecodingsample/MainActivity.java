@@ -74,7 +74,9 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
     private static final int MSG_WHAT_SHOW_TOAST = 0;
     private static final int MSG_WHAT_UPDATE_TITLE = 1;
     private SurfaceHolder.Callback surfaceCallback;
-    private enum DemoType { USE_TEXTURE_VIEW, USE_SURFACE_VIEW, USE_SURFACE_VIEW_DEMO_DECODER}
+
+    private enum DemoType {USE_TEXTURE_VIEW, USE_SURFACE_VIEW, USE_SURFACE_VIEW_DEMO_DECODER}
+
     private static DemoType demoType = DemoType.USE_TEXTURE_VIEW;
     private VideoFeeder.VideoFeed standardVideoFeeder;
 
@@ -136,7 +138,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
         initFlightController();
     }
 
-    private void initSurfaceOrTextureView(){
+    private void initSurfaceOrTextureView() {
         switch (demoType) {
             case USE_SURFACE_VIEW:
                 initPreviewerSurfaceView();
@@ -202,7 +204,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
                     if (error == null) {
                         showToast("assignSourceToPrimaryChannel success.");
                     } else {
-                        showToast("assignSourceToPrimaryChannel fail, reason: "+ error.getDescription());
+                        showToast("assignSourceToPrimaryChannel fail, reason: " + error.getDescription());
                     }
                 }
             });
@@ -281,12 +283,50 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
 
         savePath = (TextView) findViewById(R.id.activity_main_save_path);
         screenShot = (ToggleButton) findViewById(R.id.activity_main_screen_shot);
-       // screenShot.setSelected(false);
 
         titleTv = (TextView) findViewById(R.id.title_tv);
 
-        //mBtnTakeOff.setOnClickListener(new View.OnClickListener());
-        //mBtnLand.setOnClickListener(new View.OnClickListener());
+        mBtnTakeOff.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mFlightController != null) {
+                    mFlightController.startTakeoff(
+                            new CommonCallbacks.CompletionCallback() {
+                                @Override
+                                public void onResult(DJIError djiError) {
+                                    if (djiError != null) {
+                                        showToast(djiError.getDescription());
+                                    } else {
+                                        showToast("Take off Success");
+                                    }
+                                }
+                            }
+                    );
+                }
+            }
+        });
+
+        mBtnLand.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mFlightController != null) {
+
+                    mFlightController.startLanding(
+                            new CommonCallbacks.CompletionCallback() {
+                                @Override
+                                public void onResult(DJIError djiError) {
+                                    if (djiError != null) {
+                                        showToast(djiError.getDescription());
+                                    } else {
+                                        showToast("Start Landing");
+                                    }
+                                }
+                            }
+                    );
+
+                }
+            }
+        });
 
         videostreamPreviewTtView = (TextureView) findViewById(R.id.livestream_preview_ttv);
         videostreamPreviewSf = (SurfaceView) findViewById(R.id.livestream_preview_sf);
@@ -355,8 +395,12 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
         screenShot.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                showToast("clicked button");
                 handleYUVClick();
+                if (isChecked) {
+                    showToast("Start Streaming Success");
+                } else {
+                    showToast("Stop Streaming Success");
+                }
             }
         });
         //Enable/disable of virtual control mode
@@ -384,88 +428,8 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
         updateUIVisibility();
     }
 
-    // I metodi qui overraidati mettonono i valori degli stick nelle variabili globali mPitch, mRoll, mYaw
-    // and mThrottle.
-    // GESTIONE BOTTONI
-    public void onClick(View v) {
-    /*
-        if (v.getId() == R.id.activity_main_screen_shot) {
-            handleYUVClick();
-            showToast("clicked button");
-        }
-        else {
-            DemoType newDemoType = null;
-            if (v.getId() == R.id.activity_main_screen_texture) {
-                newDemoType = DemoType.USE_TEXTURE_VIEW;
-            } else if (v.getId() == R.id.activity_main_screen_surface) {
-                newDemoType = DemoType.USE_SURFACE_VIEW;
-            } else if (v.getId() == R.id.activity_main_screen_surface_with_own_decoder) {
-                newDemoType = DemoType.USE_SURFACE_VIEW_DEMO_DECODER;
-            }
 
-            if (newDemoType != null && newDemoType != demoType) {
-                // Although finish will trigger onDestroy() is called, but it is not called before OnCreate of new activity.
-                if (mCodecManager != null) {
-                    mCodecManager.cleanSurface();
-                    mCodecManager.destroyCodec();
-                    mCodecManager = null;
-                }
-                demoType = newDemoType;
-                finish();
-                overridePendingTransition(0, 0);
-                startActivity(getIntent());
-                overridePendingTransition(0, 0);
-            }}*/
-        switch (v.getId()) {
-            /*case R.id.activity_main_screen_shot:
-                showToast("clicked button");
-                handleYUVClick();
-                break;*/
-
-            case R.id.btn_take_off:
-                if (mFlightController != null) {
-                    mFlightController.startTakeoff(
-                            new CommonCallbacks.CompletionCallback() {
-                                @Override
-                                public void onResult(DJIError djiError) {
-                                    if (djiError != null) {
-                                        showToast(djiError.getDescription());
-                                    } else {
-                                        showToast("Take off Success");
-                                    }
-                                }
-                            }
-                    );
-                }
-
-                break;
-
-            case R.id.btn_land:
-                if (mFlightController != null) {
-
-                    mFlightController.startLanding(
-                            new CommonCallbacks.CompletionCallback() {
-                                @Override
-                                public void onResult(DJIError djiError) {
-                                    if (djiError != null) {
-                                        showToast(djiError.getDescription());
-                                    } else {
-                                        showToast("Start Landing");
-                                    }
-                                }
-                            }
-                    );
-
-                }
-
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    private void updateUIVisibility(){
+    private void updateUIVisibility() {
         switch (demoType) {
             case USE_SURFACE_VIEW:
                 videostreamPreviewSf.setVisibility(View.VISIBLE);
@@ -485,7 +449,9 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
                 break;
         }
     }
+
     private long lastupdate;
+
     private void notifyStatusChange() {
 
         final BaseProduct product = VideoDecodingApplication.getProductInstance();
@@ -540,7 +506,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
                     @Override
                     public void onResult(DJIError djiError) {
                         if (djiError != null) {
-                            showToast("can't change mode of camera, error:"+djiError.getDescription());
+                            showToast("can't change mode of camera, error:" + djiError.getDescription());
                         }
                     }
                 });
@@ -558,6 +524,10 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
 
             }
         }
+    }
+
+    public void onClick(View v) {
+
     }
 
     /**
@@ -617,7 +587,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
                     case USE_SURFACE_VIEW:
                         if (mCodecManager == null) {
                             mCodecManager = new DJICodecManager(getApplicationContext(), holder, videoViewWidth,
-                                                                videoViewHeight);
+                                    videoViewHeight);
                         }
                         break;
                     case USE_SURFACE_VIEW_DEMO_DECODER:
@@ -705,7 +675,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
     }
 
     // For android API <= 23
-    private void oldSaveYuvDataToJPEG(byte[] yuvFrame, int width, int height){
+    private void oldSaveYuvDataToJPEG(byte[] yuvFrame, int width, int height) {
         if (yuvFrame.length < width * height) {
             //DJILog.d(TAG, "yuvFrame size is too small " + yuvFrame.length);
             return;
@@ -748,14 +718,14 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
             bytes[y.length + (i * 2) + 1] = nu[i];
         }
         Log.d(TAG,
-              "onYuvDataReceived: frame index: "
-                  + DJIVideoStreamDecoder.getInstance().frameIndex
-                  + ",array length: "
-                  + bytes.length);
+                "onYuvDataReceived: frame index: "
+                        + DJIVideoStreamDecoder.getInstance().frameIndex
+                        + ",array length: "
+                        + bytes.length);
         screenShot(bytes, Environment.getExternalStorageDirectory() + "/DJI_ScreenShot", width, height);
     }
 
-    private void newSaveYuvDataToJPEG(byte[] yuvFrame, int width, int height){
+    private void newSaveYuvDataToJPEG(byte[] yuvFrame, int width, int height) {
         if (yuvFrame.length < width * height) {
             //DJILog.d(TAG, "yuvFrame size is too small " + yuvFrame.length);
             return;
@@ -772,7 +742,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
             yuvFrame[length + 2 * i] = u[i];
             yuvFrame[length + 2 * i + 1] = v[i];
         }
-        screenShot(yuvFrame,Environment.getExternalStorageDirectory() + "/DJI_ScreenShot", width, height);
+        screenShot(yuvFrame, Environment.getExternalStorageDirectory() + "/DJI_ScreenShot", width, height);
     }
 
     private void newSaveYuvDataToJPEG420P(byte[] yuvFrame, int width, int height) {
@@ -784,7 +754,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
         byte[] u = new byte[width * height / 4];
         byte[] v = new byte[width * height / 4];
 
-        for (int i = 0; i < u.length; i ++) {
+        for (int i = 0; i < u.length; i++) {
             u[i] = yuvFrame[length + i];
             v[i] = yuvFrame[length + u.length + i];
         }
@@ -824,7 +794,6 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
         }
 
 
-
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -832,38 +801,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
         });
     }
 
-    /*public void onClick(View v) {
-
-        if (v.getId() == R.id.activity_main_screen_shot) {
-            handleYUVClick();
-        } else {
-            DemoType newDemoType = null;
-            if (v.getId() == R.id.activity_main_screen_texture) {
-                newDemoType = DemoType.USE_TEXTURE_VIEW;
-            } else if (v.getId() == R.id.activity_main_screen_surface) {
-                newDemoType = DemoType.USE_SURFACE_VIEW;
-            } else if (v.getId() == R.id.activity_main_screen_surface_with_own_decoder) {
-                newDemoType = DemoType.USE_SURFACE_VIEW_DEMO_DECODER;
-            }
-
-            if (newDemoType != null && newDemoType != demoType) {
-                // Although finish will trigger onDestroy() is called, but it is not called before OnCreate of new activity.
-                if (mCodecManager != null) {
-                    mCodecManager.cleanSurface();
-                    mCodecManager.destroyCodec();
-                    mCodecManager = null;
-                }
-                demoType = newDemoType;
-                finish();
-                overridePendingTransition(0, 0);
-                startActivity(getIntent());
-                overridePendingTransition(0, 0);
-            }
-        }
-    }*/
-
     private void handleYUVClick() {
-        showToast("dentro stream");
         if (screenShot.isSelected()) {
             screenShot.setText("YUV Screen Shot");
             screenShot.setSelected(false);
@@ -919,7 +857,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
         }
 
         return VideoFeeder.getInstance().isFetchKeyFrameNeeded() || VideoFeeder.getInstance()
-                                                                               .isLensDistortionCalibrationNeeded();
+                .isLensDistortionCalibrationNeeded();
     }
 
     //Socket Server
