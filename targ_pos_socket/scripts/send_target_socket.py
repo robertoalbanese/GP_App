@@ -1,31 +1,28 @@
-#!/usr/bin/env python3
-# -*- coding: iso-8859-15 -*-
+#!/usr/bin/env python
 
-
-import sys
 import socket
 import json
 import time
 # ROS
-import roslib
-
 import rospy
 from geometry_msgs.msg import Point
 
 
 class send_target_socket():
-    #FORMAT = "utf-8"
+    FORMAT = "utf-8"
     DISCONNECT_MESSAGE = "!DISCONNECT"
 
     def __init__(self, ip_server, port):
 
-        rospy.init_node('send_target_socket', anonymous=True)
+        rospy.init_node('send_target_socket')
         self.PORT = port
         self.SERVER =ip_server  # IP del server
         self.ADDR = (self.SERVER, self.PORT)
         # mettere try 
-        with open('./target.JSON') as j:
-            self.data = json.load(j)
+        """ with open('./target.JSON','wb') as j:
+            self.data = json.load(j) """
+        self.data = json.load(open('./target.JSON'))
+        print("just read")
 
         self.sub = rospy.Subscriber("/D_Control_point", Point, self.send_target_to_app, queue_size=1)
 
@@ -38,9 +35,9 @@ class send_target_socket():
     
     def send_target_to_app(self, target):
         self.data["target_x"] = target.x
-        self.date["target_y"] = traget.y
-        msg = json.dumps(data)
-
+        self.data["target_y"] = target.y
+        msg = json.dumps(self.data)
+        print("before sendig")
         client = socket.socket(
         socket.AF_INET, socket.SOCK_STREAM)  # creo il client
         client.connect(self.ADDR)  # indirizzo del server a cui devo connettermi

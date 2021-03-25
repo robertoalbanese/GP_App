@@ -177,4 +177,18 @@
 
     </RelativeLayout>
 
+    <TextView
+        android:id="@+id/target_ttv"
+        android:layout_width="164dp"
+        android:layout_height="89dp"
+        android:layout_below="@+id/livestream_preview_ttv"
+        android:layout_alignParentEnd="true"
+
+
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="175dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="300dp"
+        android:layout_marginBottom="673dp"
+        android:text="TextView" />
 </RelativeLayout>

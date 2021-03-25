@@ -5,21 +5,17 @@ import numpy as np
 
 
 PORT = 8080
-SERVER = "192.168.43.238"  # IP del server
+SERVER = "130.251.13.144"  # IP del server
 ADDR = (SERVER, PORT)
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!DISCONNECT"
-
 
 def send_msg(msg, client):
 
     message = msg.encode(FORMAT)  # codificarlo in binario per la trasmissione
     client.send(message)  # mando msg
     # print(client.recv(2048).decode(FORMAT))# decodifico risposta e la printo
-    client.close()
-
-    
-
+    client.close()  
 
 def main():
 
@@ -32,8 +28,8 @@ def main():
     #    x = wordset[i][0]
     #    y = wordset[i][2]
     while True:
-        data['target_x'] = 1
-        data['target_y'] = 0
+        data['target_x'] = 5
+        data['target_y'] = 7
         
         msg = json.dumps(data)
 
@@ -43,9 +39,6 @@ def main():
         print("Sanding the jason msg...")
         send_msg(msg, client)
         time.sleep(0.3)
-        
-        
-
 
 if __name__ == "__main__":
     main()

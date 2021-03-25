@@ -108,6 +108,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
     private Button mBtnLand;
     private ToggleButton mSwtcEnableVirtualStick;
     private TextView mTextView;
+    private TextView target_tv;
 
     private float x;
     private float y;
@@ -286,6 +287,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
         mBtnSimulator = (ToggleButton) findViewById(R.id.btn_start_simulator); // per fare tutto in simulazione
         mTextView = (TextView) findViewById(R.id.textview_simulator); // element to show the simulator state infos
         mSwtcEnableVirtualStick = (ToggleButton) findViewById(R.id.swtc_enable_virtual_stick); //enable/disable Virtual Control Mode
+        target_tv = (TextView) findViewById(R.id.target_ttv) ;
 
         savePath = (TextView) findViewById(R.id.activity_main_save_path);
         screenShot = (ToggleButton) findViewById(R.id.activity_main_screen_shot);
@@ -909,6 +911,10 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
                     targetX = (float) jObj.getDouble("target_x");
                     targetY = (float) jObj.getDouble("target_y");
 
+                    //add textview here
+                    String stringTv ="targetx = " + String.valueOf(targetX )+ "\n targety= " + String.valueOf(targetY);
+                    target_tv.setText(stringTv);
+
                     //reachTarget(targetX, targetY);
 
                     // The euclidean distance between the body frame of the drone and the target point is computed
@@ -917,7 +923,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
                     // We use atan2 to compute the angular velocity along the yaw axis inside computeAnguarVelocity to let the drone rotate
                     euclideanDistance = distanceFromTargetPos(targetX, targetY);
                     mPitch = 0;
-                    mRoll = (float) (0.3 * computeLinearVelocity(euclideanDistance));
+                    mRoll = (computeLinearVelocity(euclideanDistance));
                     mYaw = 15 * computeAnguarVelocity(targetX, targetY);
                     mThrottle = 0;
 
