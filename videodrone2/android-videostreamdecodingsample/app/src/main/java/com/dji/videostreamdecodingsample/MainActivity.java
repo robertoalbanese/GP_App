@@ -109,6 +109,9 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
     private ToggleButton mSwtcEnableVirtualStick;
     private TextView mTextView;
 
+    private float x;
+    private float y;
+
     private float mPitch;
     private float mRoll;
     private float mYaw;
@@ -263,6 +266,9 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
                             String positionX = String.format("%.2f", stateData.getPositionX());
                             String positionY = String.format("%.2f", stateData.getPositionY());
                             String positionZ = String.format("%.2f", stateData.getPositionZ());
+
+                            x = stateData.getPositionX();
+                            y = stateData.getPositionY();
 
                             mTextView.setText("Yaw : " + yaw + ", Pitch : " + pitch + ", Roll : " + roll + "\n" + ", PosX : " + positionX +
                                     ", PosY : " + positionY +
@@ -903,6 +909,8 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
                     targetX = (float) jObj.getDouble("target_x");
                     targetY = (float) jObj.getDouble("target_y");
 
+                    //reachTarget(targetX, targetY);
+
                     // The euclidean distance between the body frame of the drone and the target point is computed
                     // In this way is it possible to use it to compute the linear velocity along the Roll axis
                     // Pitch velocity is setted to zero
@@ -958,6 +966,36 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
         // Euclidean distance between the body frame and the target position
         public double distanceFromTargetPos(float targX, float targY) {
             return Math.sqrt(Math.pow(targX, 2) + Math.pow(targY, 2));
+        }
+
+        public void reachTarget(float targX, float targY) {
+            float dist = (float) distanceFromTargetPos(targX, targY);
+            float off_x = x + targX;
+            float off_y = y + targY;
+            while (dist > 0.3) {
+
+                euclideanDistance = distanceFromTargetPos(off_x - x, off_y - y);
+                mPitch = 0;
+                mRoll = computeLinearVelocity(euclideanDistance);
+                mYaw = 15 * computeAnguarVelocity(off_x - x, off_y - y);
+                mThrottle = 0;
+
+                if (mFlightController != null) {
+                    // metodo che manda le variabili globali (Salvate nell'oggetto FlightControlData) al mFlightController
+                    mFlightController.sendVirtualStickFlightControlData(
+                            new FlightControlData( // oggetto descritto da queste tre variabili
+                                    mPitch, mRoll, mYaw, mThrottle
+                            ), new CommonCallbacks.CompletionCallback() {
+                                @Override
+                                public void onResult(DJIError djiError) {
+
+                                }
+                            }
+                    );
+                }
+                dist = (float) distanceFromTargetPos(off_x - x, off_y - y);
+            }
+
         }
     }
 }

@@ -5,7 +5,7 @@ import numpy as np
 
 
 PORT = 8080
-SERVER = "192.168.1.62"  # IP del server
+SERVER = "192.168.43.238"  # IP del server
 ADDR = (SERVER, PORT)
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!DISCONNECT"
@@ -31,18 +31,18 @@ def main():
     #for i in range(400):
     #    x = wordset[i][0]
     #    y = wordset[i][2]
-    while True:
-        data['target_x'] = 1
-        data['target_y'] = 1
-        
-        msg = json.dumps(data)
+    #while True:
+    data['target_x'] = 10
+    data['target_y'] = 10
+    
+    msg = json.dumps(data)
 
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # creo il client
-        client.connect(ADDR)  # indirizzo del server a cui devo connettermi
-        
-        print("Sanding the jason msg...")
-        send_msg(msg, client)
-        time.sleep(0.3)
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # creo il client
+    client.connect(ADDR)  # indirizzo del server a cui devo connettermi
+    
+    print("Sanding the jason msg...")
+    send_msg(msg, client)
+    time.sleep(0.3)
         
         
 
