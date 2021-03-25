@@ -917,7 +917,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
                     // We use atan2 to compute the angular velocity along the yaw axis inside computeAnguarVelocity to let the drone rotate
                     euclideanDistance = distanceFromTargetPos(targetX, targetY);
                     mPitch = 0;
-                    mRoll = computeLinearVelocity(euclideanDistance);
+                    mRoll = (float) (0.3 * computeLinearVelocity(euclideanDistance));
                     mYaw = 15 * computeAnguarVelocity(targetX, targetY);
                     mThrottle = 0;
 
@@ -975,9 +975,10 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
             while (dist > 0.3) {
 
                 euclideanDistance = distanceFromTargetPos(off_x - x, off_y - y);
-                mPitch = 0;
-                mRoll = computeLinearVelocity(euclideanDistance);
-                mYaw = 15 * computeAnguarVelocity(off_x - x, off_y - y);
+                mPitch = (float) ((off_y - y) / euclideanDistance);
+                mRoll = (float) ((off_x - x) / euclideanDistance);
+                //mYaw = 15 * computeAnguarVelocity(off_x - x, off_y - y);
+                mYaw = 0;
                 mThrottle = 0;
 
                 if (mFlightController != null) {
