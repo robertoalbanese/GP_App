@@ -790,6 +790,56 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
                 null);
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            Rect rect = new Rect(0, 0, width, height);
+            yuvImage.compressToJpeg(rect, 100, byteArrayOutputStream);
+            byte[] bmp = byteArrayOutputStream.toByteArray();
+
+            // convert to Bitmap and scale the image
+            Bitmap bitmap = getScaledImage(bmp, width, height, 2);
+
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 15, bos);
+            byte[] byteArray = bos.toByteArray();
+            showToast("sending jpeg");
+            SocketClient socketClient = new SocketClient();
+            socketClient.execute(byteArray, ip_address);
+
+
+            byteArrayOutputStream.flush();
+            byteArrayOutputStream.close();
+            bos.flush();
+            bos.close();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+            }
+        });
+    }
+
+    public static Bitmap getScaledImage(byte[] data, int width, int height, int scalingFactor) {
+        BitmapFactory.Options bitmapFatoryOptions = new BitmapFactory.Options();
+        bitmapFatoryOptions.inPreferredConfig = Bitmap.Config.RGB_565;
+        Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length, bitmapFatoryOptions);
+        Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, width/scalingFactor, height/scalingFactor, true );
+        return scaledBmp;
+    }
+    /**
+     * Save the buffered data into a JPG image file
+     */
+    private void screenShot123(byte[] buf, String shotDir, int width, int height) {
+
+        YuvImage yuvImage = new YuvImage(buf,
+                ImageFormat.NV21,
+                width,
+                height,
+                null);
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
             Rect rect = new Rect(0, 0, width, height);
 
@@ -912,10 +962,8 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
                     targetY = (float) jObj.getDouble("target_y");
 
                     //add textview here
-                    String stringTv ="targetx = " + String.valueOf(targetX )+ "\n targety= " + String.valueOf(targetY);
+                    String stringTv ="targetx = " + String.valueOf(targetX )+ "    targety= " + String.valueOf(targetY);
                     target_tv.setText(stringTv);
-
-                    //reachTarget(targetX, targetY);
 
                     // The euclidean distance between the body frame of the drone and the target point is computed
                     // In this way is it possible to use it to compute the linear velocity along the Roll axis

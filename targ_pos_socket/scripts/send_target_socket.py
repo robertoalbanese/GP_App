@@ -1,8 +1,12 @@
 #!/usr/bin/env python
+# -*- coding: iso-8859-15 -*-
 
+import os
+import sys
 import socket
 import json
 import time
+
 # ROS
 import rospy
 from geometry_msgs.msg import Point
@@ -19,9 +23,11 @@ class send_target_socket():
         self.SERVER =ip_server  # IP del server
         self.ADDR = (self.SERVER, self.PORT)
         # mettere try 
+        path = os.path.dirname(os.path.abspath(__file__)) + '/target.JSON'
+        print(path)
         """ with open('./target.JSON','wb') as j:
             self.data = json.load(j) """
-        self.data = json.load(open('./target.JSON'))
+        self.data = json.load(open(path))
         print("just read")
 
         self.sub = rospy.Subscriber("/D_Control_point", Point, self.send_target_to_app, queue_size=1)

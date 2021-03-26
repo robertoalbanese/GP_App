@@ -180,15 +180,15 @@
 
     <TextView
         android:id="@+id/target_ttv"
-        android:layout_width="108dp"
-        android:layout_height="58dp"
+        android:layout_width="327dp"
+        android:layout_height="64dp"
         android:layout_below="@+id/livestream_preview_ttv"
         android:layout_alignParentEnd="true"
 
 
         android:layout_marginLeft="100dp"
-        android:layout_marginTop="11dp"
-        android:layout_marginEnd="428dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="209dp"
         android:layout_marginRight="300dp"
         android:layout_marginBottom="673dp"
         android:text="TextView" />

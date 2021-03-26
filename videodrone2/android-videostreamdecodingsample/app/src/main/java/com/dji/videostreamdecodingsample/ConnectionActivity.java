@@ -125,7 +125,8 @@ public class ConnectionActivity extends Activity implements View.OnClickListener
                             if (djiError == DJISDKError.REGISTRATION_SUCCESS) {
                                 DJILog.e("App registration", DJISDKError.REGISTRATION_SUCCESS.getDescription());
                                 DJISDKManager.getInstance().startConnectionToProduct();
-                                //DJISDKManager.getInstance().enableBridgeModeWithBridgeAppIP("192.168.1.103");
+                                //DJISDKManager.getInstance().enableBridgeModeWithBridgeAppIP("172.20.10.5");
+                                //DJISDKManager.getInstance().enableBridgeModeWithBridgeAppIP("192.168.43.102");
                                 showToast("Register SDK Success");
                                 /*runOnUiThread(new Runnable() {
                                     @Override
