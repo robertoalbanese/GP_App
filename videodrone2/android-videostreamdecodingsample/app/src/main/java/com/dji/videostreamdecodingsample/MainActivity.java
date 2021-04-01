@@ -124,7 +124,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
     private SurfaceHolder videostreamPreviewSh;
     private Camera mCamera;
     private DJICodecManager mCodecManager;
-    private TextView savePath;
+    //private TextView savePath;
     private ToggleButton screenShot;
     private StringBuilder stringBuilder;
     private int videoViewWidth;
@@ -287,11 +287,11 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
         mBtnSimulator = (ToggleButton) findViewById(R.id.btn_start_simulator); // per fare tutto in simulazione
         mTextView = (TextView) findViewById(R.id.textview_simulator); // element to show the simulator state infos
         mSwtcEnableVirtualStick = (ToggleButton) findViewById(R.id.swtc_enable_virtual_stick); //enable/disable Virtual Control Mode
-        target_tv = (TextView) findViewById(R.id.target_ttv) ;
+        target_tv = (TextView) findViewById(R.id.target_ttv);
 
-        savePath = (TextView) findViewById(R.id.activity_main_save_path);
+        //savePath = (TextView) findViewById(R.id.activity_main_save_path);
         screenShot = (ToggleButton) findViewById(R.id.activity_main_screen_shot);
-        savePath.setVisibility(View.INVISIBLE);
+        //savePath.setVisibility(View.INVISIBLE);
 
         titleTv = (TextView) findViewById(R.id.title_tv);
 
@@ -656,7 +656,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
     public void onYuvDataReceived(MediaFormat format, final ByteBuffer yuvFrame, int dataSize, final int width, final int height) {
         //In this demo, we test the YUV data by saving it into JPG files.
         //DJILog.d(TAG, "onYuvDataReceived " + dataSize);
-        if (count++ % 10 == 0 && yuvFrame != null) {
+        if (count++ % 15 == 0 && yuvFrame != null) {
             final byte[] bytes = new byte[dataSize];
             yuvFrame.get(bytes);
             //DJILog.d(TAG, "onYuvDataReceived2 " + dataSize);
@@ -800,7 +800,6 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 15, bos);
             byte[] byteArray = bos.toByteArray();
-            showToast("sending jpeg");
             SocketClient socketClient = new SocketClient();
             socketClient.execute(byteArray, ip_address);
 
@@ -825,9 +824,10 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
         BitmapFactory.Options bitmapFatoryOptions = new BitmapFactory.Options();
         bitmapFatoryOptions.inPreferredConfig = Bitmap.Config.RGB_565;
         Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length, bitmapFatoryOptions);
-        Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, width/scalingFactor, height/scalingFactor, true );
+        Bitmap scaledBmp = Bitmap.createScaledBitmap(bmp, width / scalingFactor, height / scalingFactor, true);
         return scaledBmp;
     }
+
     /**
      * Save the buffered data into a JPG image file
      */
@@ -899,7 +899,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
                     DJIVideoStreamDecoder.getInstance().setYuvDataListener(MainActivity.this);
                     break;
             }
-            savePath.setText("");
+            //savePath.setText("");
             //savePath.setVisibility(View.VISIBLE);
         }
     }
@@ -911,7 +911,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
 
         path = path + "\n";
         stringBuilder.append(path);
-        savePath.setText(stringBuilder.toString());
+        //savePath.setText(stringBuilder.toString());
     }
 
     private boolean isTranscodedVideoFeedNeeded() {
@@ -962,7 +962,7 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
                     targetY = (float) jObj.getDouble("target_y");
 
                     //add textview here
-                    String stringTv ="targetx = " + String.valueOf(targetX )+ "    targety= " + String.valueOf(targetY);
+                    String stringTv = "targetx = " + String.valueOf(targetX) + "    targety= " + String.valueOf(targetY);
                     target_tv.setText(stringTv);
 
                     // The euclidean distance between the body frame of the drone and the target point is computed
@@ -970,9 +970,13 @@ public class MainActivity extends Activity implements DJICodecManager.YuvDataCal
                     // Pitch velocity is setted to zero
                     // We use atan2 to compute the angular velocity along the yaw axis inside computeAnguarVelocity to let the drone rotate
                     euclideanDistance = distanceFromTargetPos(targetX, targetY);
-                    mPitch = 0;
-                    mRoll = (computeLinearVelocity(euclideanDistance));
+                    /*mPitch = 0;
+                    mRoll = (float)((1.5) *(computeLinearVelocity(euclideanDistance)));
                     mYaw = 15 * computeAnguarVelocity(targetX, targetY);
+                    mThrottle = 0;*/
+                    mPitch = (float) ((0.5) * ((targetY) / (euclideanDistance)));
+                    mRoll = (float) ((0.5) * ((targetX) / (euclideanDistance)));
+                    mYaw = 0;
                     mThrottle = 0;
 
                     //Each time a new targeg position is received the velocities are sent to the FlightController
